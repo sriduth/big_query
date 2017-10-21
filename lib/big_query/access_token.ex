@@ -12,7 +12,6 @@ defmodule BigQuery.AccessToken do
   # Based on https://gist.github.com/plamb/8c8f39cfba9e69cb034a/871a9b8128117518cdfbbf46b4cd405b5353f6c6
   @spec get_token :: {:ok, String.t} | {:error, String.t}
   def get_token() do
-
     result = mdo do
       key_file = Application.get_env(:big_query, :bigquery_private_key_path) |> IO.inspect
 
