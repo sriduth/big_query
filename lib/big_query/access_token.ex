@@ -4,7 +4,7 @@ defmodule BigQuery.AccessToken do
   import Fun.Either
   alias Fun.Either.Either.{Left, Right}
 
-  alias Ebach.{S3Utils}
+  alias ExAws.{S3, KMS}
   
   @moduledoc """
   Retrieve a Google Cloud Access Token scoped to BigQuery
@@ -13,9 +13,19 @@ defmodule BigQuery.AccessToken do
   @spec get_token :: {:ok, String.t} | {:error, String.t}
   def get_token() do
     result = mdo do
-      key_file = Application.get_env(:big_query, :bigquery_private_key_path) |> IO.inspect
+      key_file = Application.get_env(:big_query, :bigquery_private_key_path)
 
-      key_json <- File.read(key_file)
+      key_json <- case key_file do
+                   {:fs, path} -> mdo do
+                       key_json <- File.read(path)
+                       return.(key_json)
+                     end
+                    {:s3, bucket, path} -> mdo do
+                        response <- S3.get_object(bucket, path) |> ExAws.request
+                        return.(KMS.decrypt(response.body))
+                      end
+                 end
+      
       key_map <- Poison.decode(key_json)
 
       jwk = JOSE.JWK.from_pem(key_map["private_key"])
