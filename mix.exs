@@ -35,6 +35,7 @@ defmodule BigQuery.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
+      {:fun, path: "../fun"},
       {:jose, "~> 1.8"},
       {:poison, "~> 3.1"},
       {:httpoison, "~> 0.11.1"},
