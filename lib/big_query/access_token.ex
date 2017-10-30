@@ -5,7 +5,7 @@ defmodule BigQuery.AccessToken do
   alias Fun.Either.Either.{Left, Right}
 
   alias ExAws.{S3, KMS}
-  
+
   @moduledoc """
   Retrieve a Google Cloud Access Token scoped to BigQuery
   """
@@ -25,23 +25,23 @@ defmodule BigQuery.AccessToken do
                         return.(KMS.decrypt(response.body))
                       end
                  end
-      
+
       key_map <- Poison.decode(key_json)
 
       jwk = JOSE.JWK.from_pem(key_map["private_key"])
 
       jws = %{"alg" => "RS256"}
-      
+
       header = %{
         "alg" => "RS256",
         "typ" => "JWT"
       }
-      
+
       iat = :os.system_time(:seconds)
       exp = iat + 3600
 
       bigquery_scope = Application.get_env(:big_query, :bigquery_scope, "")
-    
+
       claims = %{
         "iss" => key_map["client_email"],
         "scope" => "#{bigquery_scope} https://www.googleapis.com/auth/bigquery.readonly https://www.googleapis.com/auth/bigquery.insertdata https://www.googleapis.com/auth/bigquery",
@@ -51,7 +51,7 @@ defmodule BigQuery.AccessToken do
       }
 
       encoded_claims <- Poison.encode(claims)
-          
+
       {_alg, compacted} = JOSE.JWS.sign(jwk, encoded_claims, header, jws)
       |> JOSE.JWS.compact
 
