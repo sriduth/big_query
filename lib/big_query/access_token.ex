@@ -22,7 +22,8 @@ defmodule BigQuery.AccessToken do
                      end
                     {:s3, bucket, path} -> mdo do
                         response <- S3.get_object(bucket, path) |> ExAws.request
-                        return.(KMS.decrypt(response.body))
+                        response <- KMS.decrypt(response.body) |> ExAws.request
+                        return.(Base.decode64(response["Plaintext"]))
                       end
                  end
 
