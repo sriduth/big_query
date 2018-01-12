@@ -29,9 +29,6 @@ defmodule BigQuery.AccessToken do
                       end
                  end
 
-
-      _log <- Logger.info "Got key_json #{inspect key_json}"
-      
       key_map <- Poison.decode(key_json)
 
       jwk = JOSE.JWK.from_pem(key_map["private_key"])
