@@ -1,7 +1,7 @@
 defmodule BigQuery.AccessToken do
   use Fun.Core
 
-  require Logger
+  import Logger
   
   import Fun.Either
   alias Fun.Either.Either.{Left, Right}
