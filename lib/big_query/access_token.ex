@@ -30,7 +30,7 @@ defmodule BigQuery.AccessToken do
                  end
 
 
-      Logger.info "Got key_json #{inspect key_json}"
+      _log <- Logger.info "Got key_json #{inspect key_json}"
       
       key_map <- Poison.decode(key_json)
 
